@@ -1,0 +1,136 @@
+name: gate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Candidate zolana SHA (blank uses zolana main)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  copy-honest:
+    name: copy-honest ${{ matrix.pin }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pin:
+          - 51f70d529f9b51a1da6e4f5f43221895d6009adc
+          - 529c6ce0e31abd1c2821421c67e187f77e3256a6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: helius-labs/zolana
+          ref: ${{ matrix.pin }}
+          path: zolana
+      - name: Check SHA256SUMS
+        working-directory: pins/${{ matrix.pin }}
+        run: sha256sum --check SHA256SUMS
+      - name: cmp copies against zolana at pin
+        env:
+          PIN: ${{ matrix.pin }}
+        run: |
+          set -euo pipefail
+          rels=(
+            test-vectors/key_derivation.json
+            sdk-libs/keypair/tests/vectors.rs
+            sdk-libs/keypair/tests/cases/derivation.rs
+            sdk-libs/keypair/tests/seed_based_keypair.rs
+            sdk-libs/ts/test/key-derivation-vectors.test.ts
+            sdk-libs/ts/test/seed-based-keypair.test.ts
+          )
+          for rel in "${rels[@]}"; do
+            cmp "pins/${PIN}/${rel}" "zolana/${rel}"
+          done
+
+  mirror-zolana:
+    name: mirror-zolana ${{ matrix.pin }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        pin:
+          - 51f70d529f9b51a1da6e4f5f43221895d6009adc
+          - 529c6ce0e31abd1c2821421c67e187f77e3256a6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: helius-labs/zolana
+          ref: ${{ matrix.pin }}
+      - uses: ./.github/actions/setup-rust
+        with:
+          install-just: "true"
+          private-libs-token: ""
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: cargo nextest run -p zolana-keypair
+      - run: npm ci && npm run test --workspace @heliuslabs/zolana
+
+  watch-main:
+    name: watch-main
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: helius-labs/zolana
+          ref: ${{ github.event.inputs.sha || 'main' }}
+          path: zolana
+      - name: cmp main-pin JSON against candidate SHA
+        run: |
+          set -euo pipefail
+          cmp \
+            pins/529c6ce0e31abd1c2821421c67e187f77e3256a6/test-vectors/key_derivation.json \
+            zolana/test-vectors/key_derivation.json
+
+  review-submission:
+    name: review-submission
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare submitted ed25519_rail to deployment pin
+        run: |
+          set -euo pipefail
+          if ! compgen -G 'submissions/*/key_derivation.json' > /dev/null; then
+            echo "no submissions; skip"
+            exit 0
+          fi
+          python3 <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          pin_path = pathlib.Path(
+              "pins/51f70d529f9b51a1da6e4f5f43221895d6009adc/test-vectors/key_derivation.json"
+          )
+          pin = json.loads(pin_path.read_text())["ed25519_rail"]
+          keys = (
+              "derivation_message",
+              "derivation_seed",
+              "nullifier_secret",
+              "nullifier_pubkey",
+              "viewing_secret",
+              "viewing_pubkey",
+          )
+          failed = False
+          for path in sorted(pathlib.Path("submissions").glob("*/key_derivation.json")):
+              rail = json.loads(path.read_text())["ed25519_rail"]
+              for key in keys:
+                  if rail[key] != pin[key]:
+                      print(f"{path} ed25519_rail.{key} mismatch", file=sys.stderr)
+                      failed = True
+          if failed:
+              sys.exit(1)
+          PY

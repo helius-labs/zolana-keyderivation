@@ -1,0 +1,6 @@
+993fe4fb61302bac229b56fc18a03188ba2ddba334022279ae7f1351d477def0  test-vectors/key_derivation.json
+36c83684f5282c31822ca2a8772026e8c559d78e620955281a3a66d0f79b7e1a  sdk-libs/keypair/tests/vectors.rs
+725c0cce76a27515815a17ca75ffea330e655c8fdf6c2bf9868d86a44742fc9b  sdk-libs/keypair/tests/cases/derivation.rs
+1dec9e40804247593e92f843aad7abe5931b4a6674238716e8691dd1d0170245  sdk-libs/keypair/tests/seed_based_keypair.rs
+c9da1d236f229eab949bb6d99959b6a7fea459705839a67814e07ffc74e9276e  sdk-libs/ts/test/key-derivation-vectors.test.ts
+16242d1b1b1af87da1a8986af0fa9ca6f9665dee2865a704d3fa7b8c7a9161f2  sdk-libs/ts/test/seed-based-keypair.test.ts
