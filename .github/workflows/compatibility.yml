@@ -1,0 +1,39 @@
+name: compatibility
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      zolana_ref:
+        description: Zolana release tag or full SHA
+        required: true
+        default: 51f70d529f9b51a1da6e4f5f43221895d6009adc
+        type: string
+  repository_dispatch:
+    types: [zolana-release]
+
+permissions:
+  contents: read
+
+jobs:
+  key-derivation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: zolana-keyderivation
+
+      - uses: actions/checkout@v4
+        with:
+          repository: helius-labs/zolana
+          ref: ${{ inputs.zolana_ref || github.event.client_payload.sha || '51f70d529f9b51a1da6e4f5f43221895d6009adc' }}
+          path: zolana
+
+      - name: Install candidate Rust toolchain
+        working-directory: zolana
+        run: rustup show active-toolchain
+
+      - name: Run frozen compatibility test
+        working-directory: zolana
+        run: cargo test --manifest-path ../zolana-keyderivation/Cargo.toml

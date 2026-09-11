@@ -1,0 +1,23 @@
+{
+  "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+  "accounts": [
+    {
+      "account": 0,
+      "signing_secret": "37df573b3ac4ad5b522e064e25b63ea16bcbe79d449e81a0268d1047948bb445",
+      "signing_pubkey": "f036276246a75b9de3349ed42b15e232f6518fc20f5fcd4f1d64e81f9bd258f7",
+      "nullifier_secret": "85e3a0d6bf9d62582e6500ea3245ddddbf65e517dbc985c85982e383e4751e",
+      "nullifier_pubkey": "070a4386ec323b299c7d7b9faf744e001b545974ac02fd148b537a4528ab8474",
+      "viewing_secret": "1694bc1c8a456511d0364e26c71409b4912c5b2ff56bed3fc9c706e066496a54",
+      "viewing_pubkey": "03170ee9cf7a6f1ad811bd2019d386f67ce337458e0bf585c3cad7ddac85373e32"
+    },
+    {
+      "account": 1,
+      "signing_secret": "ba5e7b6e3680b4eb81db8e54c8e466b2e9a899355888403355d858ab985d2fc4",
+      "signing_pubkey": "f8029acf5cbcbdd5ac46ec147f3b78a3df6e5022ef0411db2bab650d329a4cd4",
+      "nullifier_secret": "62351d526f51996740cc2e88978b084117fdee00af7c04df999a22321c9001",
+      "nullifier_pubkey": "1053061c5b9c4fc75b26b72d83d88d62f80e397cea6f36c07e25c9d8645106fc",
+      "viewing_secret": "60a8c80b23007c79c1dcf1821446dc77e6fcd2bb3e747ddca629784adaf8fa18",
+      "viewing_pubkey": "03bb3b5ea4e0a873297d1f80e2ee1ebfabf472129debca75fced4753a95769fe27"
+    }
+  ]
+}
