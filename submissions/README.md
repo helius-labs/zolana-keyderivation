@@ -11,6 +11,6 @@ CI compares these `ed25519_rail` fields to the `release/dev-v2` pin (`51f70d529f
 - `viewing_secret`
 - `viewing_pubkey`
 
-Byte-equal strings pass. A mismatch fails. CI does not run submitted code and does not reimplement HKDF.
+Equal strings pass. CI reads JSON; it does not execute the submitted file.
 
-If a PR is awkward, open an issue and attach the JSON (or a gist).
+You can also open an issue and attach the JSON.
