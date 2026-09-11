@@ -2,7 +2,7 @@
 
 This repository checks whether a Zolana revision derives the same wallet keys as the deployed `release/dev-v2` version.
 
-The test owns its expected bytes. It loads `zolana-keypair` from a sibling Zolana checkout, derives both signing-key rails and the seed-phrase accounts, then compares the results byte for byte.
+The tests own their expected bytes. Separate tests load `zolana-keypair` from a sibling Zolana checkout and check the Ed25519 rail, P-256 rail, and seed-phrase accounts byte for byte.
 
 ## Run
 
@@ -18,4 +18,4 @@ cargo test
 
 CI accepts a Zolana tag or full SHA through `workflow_dispatch`.
 
-The compatibility check covers the derivation message, derivation seed, nullifier keys, viewing keys, and seed-phrase child keys. Owner and compressed-address hashes are tested by Zolana because those values depend on circuit hashing rather than wallet key derivation.
+The three compatibility tests cover the derivation message, derivation seed, nullifier keys, viewing keys, and seed-phrase child keys. Owner and compressed-address hashes are tested by Zolana because those values depend on circuit hashing rather than wallet key derivation.

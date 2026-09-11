@@ -8,87 +8,13 @@ use serde_json::Value;
 use sha2::Sha512;
 use solana_derivation_path::DerivationPath;
 use solana_seed_phrase::generate_seed_from_seed_phrase_and_passphrase;
-use zolana_keypair::{
-    derivation::{ed25519_derivation_message, expand_roles},
-    Curve, NullifierKey, ShieldedKeypair, SigningKey, ViewingKey,
-};
+use zolana_keypair::{NullifierKey, SigningKey, ViewingKey};
 
 const TSPP_COIN_TYPE: u32 = 1_392_955_331;
 const NIST256P1_MASTER_HMAC_KEY: &[u8] = b"Nist256p1 seed";
 
 fn text(value: &Value) -> &str {
     value.as_str().expect("vector field is a string")
-}
-
-fn decode<const N: usize>(value: &Value) -> [u8; N] {
-    hex::decode(text(value))
-        .expect("vector field is hexadecimal")
-        .try_into()
-        .unwrap_or_else(|bytes: Vec<u8>| {
-            panic!("vector field has {} bytes; expected {N}", bytes.len())
-        })
-}
-
-fn assert_expanded_roles(section: &Value, seed: &[u8], curve: Curve) {
-    let (nullifier, viewing) = expand_roles(seed, curve).expect("role expansion succeeds");
-    assert_eq!(
-        hex::encode(nullifier.secret()),
-        text(&section["nullifier_secret"])
-    );
-    assert_eq!(
-        hex::encode(nullifier.pubkey().expect("nullifier public key")),
-        text(&section["nullifier_pubkey"])
-    );
-    assert_eq!(
-        hex::encode(viewing.secret_bytes().as_slice()),
-        text(&section["viewing_secret"])
-    );
-    assert_eq!(
-        hex::encode(viewing.pubkey().as_bytes()),
-        text(&section["viewing_pubkey"])
-    );
-}
-
-#[test]
-fn candidate_matches_frozen_key_derivation() {
-    let vectors: Value = serde_json::from_str(include_str!("../test-vectors/key_derivation.json"))
-        .expect("key derivation vectors are valid JSON");
-
-    let ed25519 = &vectors["ed25519_rail"];
-    let signing = SigningKey::from_ed25519_bytes(&decode(&ed25519["signing_secret"]));
-    let signer_pubkey = signing
-        .pubkey()
-        .as_ed25519()
-        .expect("ed25519 signing public key");
-    assert_eq!(hex::encode(signer_pubkey), text(&ed25519["signer_pubkey"]));
-    assert_eq!(
-        hex::encode(ed25519_derivation_message(&signer_pubkey)),
-        text(&ed25519["derivation_message"])
-    );
-    let seed = signing.derivation_seed().expect("ed25519 derivation seed");
-    assert_eq!(
-        hex::encode(seed.as_slice()),
-        text(&ed25519["derivation_seed"])
-    );
-    assert_expanded_roles(ed25519, &seed, Curve::Ed25519);
-
-    let p256 = &vectors["p256_rail"];
-    let signing =
-        SigningKey::from_p256_bytes(&decode(&p256["signing_secret"])).expect("P-256 signing key");
-    let seed = signing.derivation_seed().expect("P-256 derivation seed");
-    assert_eq!(hex::encode(seed.as_slice()), text(&p256["derivation_seed"]));
-    assert_expanded_roles(p256, &seed, Curve::P256);
-
-    let keypair = ShieldedKeypair::from_keypair(signing).expect("P-256 shielded keypair");
-    assert_eq!(
-        hex::encode(
-            keypair
-                .nullifier_key
-                .pubkey()
-                .expect("nullifier public key")
-        ),
-        text(&p256["nullifier_pubkey"])
-    );
 }
 
 fn solana_path(account: u32) -> String {
