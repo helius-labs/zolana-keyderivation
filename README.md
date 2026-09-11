@@ -1,5 +1,5 @@
 # zolana-keyderivation
 
-Frozen Zolana wallet key-derivation vectors and a second CI gate.
+Byte copies of Zolana wallet key-derivation fixtures, plus CI that re-runs zolana's tests at pinned SHAs.
 
-Pins, spec extract, submissions path, and CI land via pull request.
+The pins, spec extract, submissions path, and workflows are in [PR #1](https://github.com/helius-labs/zolana-keyderivation/pull/1).
