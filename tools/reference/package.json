@@ -1,0 +1,13 @@
+{
+  "name": "zolana-keyderivation-reference",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "verify": "node verify-vectors.mjs"
+  },
+  "dependencies": {
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0",
+    "circomlibjs": "0.1.7"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "child_cases": [
+    {
+      "description": "Published SLIP-0010 hardened child 0.",
+      "expected": {
+        "outputs": {
+          "chain_code": "3460cea53e6a6bb5fb391eeef3237ffd8724bf0a40e94943c98b83825342ee11",
+          "private_key": "6939694369114c67917a182c59ddb8cafc3004e63ca5d3b84403ba8613debc0c"
+        },
+        "status": "ok"
+      },
+      "id": "slip10_child_zero",
+      "input": {
+        "index": 0,
+        "parent_chain": "beeb672fe4621673f722f38529c07392fecaa61015c80c34f29ce8b41b3cb6ea",
+        "parent_key": "612091aaa12e22dd2abef664f8a01a82cae99ad7441b7ef8110424915c268bc2"
+      }
+    },
+    {
+      "description": "Published SLIP-0010 hardened child 28578.",
+      "expected": {
+        "outputs": {
+          "chain_code": "e94c8ebe30c2250a14713212f6449b20f3329105ea15b652ca5bdfc68f6c65c2",
+          "private_key": "06f0db126f023755d0b8d86d4591718a5210dd8d024e3e14b6159d63f53aa669"
+        },
+        "status": "ok"
+      },
+      "id": "slip10_child_retry",
+      "input": {
+        "index": 28578,
+        "parent_chain": "beeb672fe4621673f722f38529c07392fecaa61015c80c34f29ce8b41b3cb6ea",
+        "parent_key": "612091aaa12e22dd2abef664f8a01a82cae99ad7441b7ef8110424915c268bc2"
+      }
+    }
+  ],
+  "master_cases": [
+    {
+      "description": "Published SLIP-0010 P-256 short master vector.",
+      "expected": {
+        "outputs": {
+          "chain_code": "beeb672fe4621673f722f38529c07392fecaa61015c80c34f29ce8b41b3cb6ea",
+          "private_key": "612091aaa12e22dd2abef664f8a01a82cae99ad7441b7ef8110424915c268bc2"
+        },
+        "status": "ok"
+      },
+      "id": "slip10_master_short",
+      "input": {
+        "seed": "000102030405060708090a0b0c0d0e0f"
+      }
+    },
+    {
+      "description": "Published SLIP-0010 P-256 long master vector.",
+      "expected": {
+        "outputs": {
+          "chain_code": "96cd4465a9644e31528eda3592aa35eb39a9527769ce1855beafc1b81055e75d",
+          "private_key": "eaa31c2e46ca2962227cf21d73a7ef0ce8b31c756897521eb6c7b39796633357"
+        },
+        "status": "ok"
+      },
+      "id": "slip10_master_long",
+      "input": {
+        "seed": "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542"
+      }
+    },
+    {
+      "description": "Published SLIP-0010 P-256 retry master vector.",
+      "expected": {
+        "outputs": {
+          "chain_code": "7762f9729fed06121fd13f326884c82f59aa95c57ac492ce8c9654e60efd130c",
+          "private_key": "3b8c18469a4634517d6d0b65448f8e6c62091b45540a1743c5846be55d47d88f"
+        },
+        "status": "ok"
+      },
+      "id": "slip10_master_retry",
+      "input": {
+        "seed": "a7305bc8df8d0951f0cb224c0e95d7707cbdf2c6ce7e8d481fec69c7ff5e9446"
+      }
+    }
+  ]
+}

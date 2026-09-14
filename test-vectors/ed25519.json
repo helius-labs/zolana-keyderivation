@@ -1,0 +1,174 @@
+{
+  "derivation_cases": [
+    {
+      "description": "Preserve deployed Ed25519 derivation bytes.",
+      "expected": {
+        "outputs": {
+          "derivation_message": "ff736f6c616e61206f6666636861696e001d32a88533af12d35e5ac6fce817a4cb810bcc4115386b14a78e8b2ef09d864c0001ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c0e00545350502f6465726976652f7631",
+          "derivation_seed": "4d9d15870ba7175fce7b354ae27449a7b7e477ac14a59019960d48442c4c2b058103c2a6db23b3f800dc92354bc80dbab79444f457c8ea36fe16a586516e5203",
+          "nullifier_pubkey": "0ce02d7711322665f107415edd1ce95cc2aa12378f6cd56d6e0544b800c448d1",
+          "nullifier_secret": "f172e55a6d39bf1602b0ef9d7276882b68c84dea44867b491091056e36cea1",
+          "signer_pubkey": "ea4a6c63e29c520abef5507b132ec5f9954776aebebe7b92421eea691446d22c",
+          "viewing_pubkey": "0299cff79e0e9e5a109e998f3868a1c358eb82e30ee4737ce8271c1e3a473ea0f6",
+          "viewing_secret": "1fb49d0ea7f1c6fead90b0e1eccd87a9a7d08b3cd450412f685fa4bc88540c2a"
+        },
+        "status": "ok"
+      },
+      "id": "ed25519_baseline",
+      "input": {
+        "signing_secret": "0707070707070707070707070707070707070707070707070707070707070707"
+      }
+    },
+    {
+      "description": "All-zero 32-byte signing seed.",
+      "expected": {
+        "outputs": {
+          "derivation_message": "ff736f6c616e61206f6666636861696e001d32a88533af12d35e5ac6fce817a4cb810bcc4115386b14a78e8b2ef09d864c00013b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da290e00545350502f6465726976652f7631",
+          "derivation_seed": "4bab2369a2d3b6cd4dc43cc349f24eb8bd63c5bd4c5f1107ffe0ae86d6443e3f92584da552650b342af65e6c99cbebbd6cca1cd14da743726d70adbff7d0c605",
+          "nullifier_pubkey": "2891d574454494f8c253ff25ec3e82913e618c932112c552f3f11a096b85f305",
+          "nullifier_secret": "f7a61e803d7554208fe7fa2543bbd0e3fb085836776905c6d721158fd666da",
+          "signer_pubkey": "3b6a27bcceb6a42d62a3a8d02a6f0d73653215771de243a63ac048a18b59da29",
+          "viewing_pubkey": "027eb4f162d6b8a5755f18742f6b6830f836f3e67f1d4abd36cd8d9f80532dd1b7",
+          "viewing_secret": "f0a969506bedda5891c3b134047ea81d967966153d8fd41e680d1a5ef1813d12"
+        },
+        "status": "ok"
+      },
+      "id": "ed25519_zero_seed",
+      "input": {
+        "signing_secret": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "All-ff 32-byte signing seed.",
+      "expected": {
+        "outputs": {
+          "derivation_message": "ff736f6c616e61206f6666636861696e001d32a88533af12d35e5ac6fce817a4cb810bcc4115386b14a78e8b2ef09d864c000176a1592044a6e4f511265bca73a604d90b0529d1df602be30a19a9257660d1f50e00545350502f6465726976652f7631",
+          "derivation_seed": "f79e0d2f6f8bfe8eb01a9d8d1d15e35e964b65ea23d9a448650a9f368a9dfe6b336b9915db379049db9e6531782b089db20c8695f0596a0312cf283e714bec07",
+          "nullifier_pubkey": "271d09a7809b443c1bac092019f085a98ddc2b150c845974dced01b1a2c1da5b",
+          "nullifier_secret": "d4be7a15e03a9c38c83df6d535e385bd191b045b59f69d456507b7d8f1bf9e",
+          "signer_pubkey": "76a1592044a6e4f511265bca73a604d90b0529d1df602be30a19a9257660d1f5",
+          "viewing_pubkey": "02c4e54d39e58cac69d7f19b3c7929a76645344c2147fac7bf43d68097f9c898ff",
+          "viewing_secret": "f02f552e0c54a56f8f93ee9aeb1b8ea42eb6bdc2b96176f12fe9b617b914d051"
+        },
+        "status": "ok"
+      },
+      "id": "ed25519_ff_seed",
+      "input": {
+        "signing_secret": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    {
+      "description": "Signing-seed bytes 00 through 1f.",
+      "expected": {
+        "outputs": {
+          "derivation_message": "ff736f6c616e61206f6666636861696e001d32a88533af12d35e5ac6fce817a4cb810bcc4115386b14a78e8b2ef09d864c000103a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b80e00545350502f6465726976652f7631",
+          "derivation_seed": "ef46a8fd2d4b8161fd3c559041055cbd9114c1e925ff60b7a43da109759e96aa60edfd3b6e0f1edaef404ec021566590f9b90b9612299b494c5f8945aef99603",
+          "nullifier_pubkey": "0d61c9f86ba53201b1805912c5eff3ffd851e8289736c4d2e4dfebca3a72ffc2",
+          "nullifier_secret": "4dca85d8bd986c276089cd08b9fb79fc33a35a1f5a4986c4a65d29dfd262bb",
+          "signer_pubkey": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+          "viewing_pubkey": "0214994d627897dda4b7bbd25a1ae039e66a5d6672a7874471467b6b96fef4703b",
+          "viewing_secret": "ac7720320eafa6010e55c9d424154f09e0bc547775b9c6eb8dcffdc31a295764"
+        },
+        "status": "ok"
+      },
+      "id": "ed25519_ascending_seed",
+      "input": {
+        "signing_secret": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      }
+    }
+  ],
+  "role_expansion_cases": [
+    {
+      "description": "64-byte all-zero KDF input.",
+      "expected": {
+        "outputs": {
+          "nullifier_pubkey": "1246d0b0b77cd2aab4fe013516b81f57ba0de8ee213f17c5df6205d577470a8b",
+          "nullifier_secret": "ba51fe062fbf568dd1c69eaacbfb578c53e74fb4756af2386c9b3e18e6cb7e",
+          "viewing_pubkey": "0263ca223f7e9e341236ca70bd6d00c36ae9bab3d261db384d66b14f0b04edb554",
+          "viewing_secret": "74ec9f84a8decbbda0b10d3ec084bed5a2890167d228662abb7baf3ea0341542"
+        },
+        "status": "ok"
+      },
+      "id": "ed25519_expand_zero",
+      "input": {
+        "seed": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "64-byte all-ff KDF input.",
+      "expected": {
+        "outputs": {
+          "nullifier_pubkey": "2d99d88ecc6f84b2ecee16b6776fe82eab7eb8fa8a4cc77789434da4d518707a",
+          "nullifier_secret": "44ed10e882beafdeb2aa33e16bc310f612e27723559428e8172defc702ca3b",
+          "viewing_pubkey": "03bf255a4fbfef8b1e580ac1bfebe5bec0c9f4a6d94d0f91abea54989b68d89096",
+          "viewing_secret": "95498a892862197a1d453915b250e8bffc1e4fe6436fe5b24ba567df1ca8623e"
+        },
+        "status": "ok"
+      },
+      "id": "ed25519_expand_ff",
+      "input": {
+        "seed": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    {
+      "description": "Reject a 0-byte derivation seed; this rail requires 64.",
+      "expected": {
+        "error": {
+          "expected": 64,
+          "got": 0,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "ed25519_expand_empty",
+      "input": {
+        "seed": ""
+      }
+    },
+    {
+      "description": "Reject a 63-byte derivation seed; this rail requires 64.",
+      "expected": {
+        "error": {
+          "expected": 64,
+          "got": 63,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "ed25519_expand_short",
+      "input": {
+        "seed": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "Reject a 65-byte derivation seed; this rail requires 64.",
+      "expected": {
+        "error": {
+          "expected": 64,
+          "got": 65,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "ed25519_expand_long",
+      "input": {
+        "seed": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "Reject a 32-byte derivation seed; this rail requires 64.",
+      "expected": {
+        "error": {
+          "expected": 64,
+          "got": 32,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "ed25519_expand_p256_length",
+      "input": {
+        "seed": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  ]
+}

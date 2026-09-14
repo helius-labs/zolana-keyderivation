@@ -1,155 +1,159 @@
-use ed25519_dalek_bip32::ExtendedSigningKey;
-use hkdf::hmac::{Hmac, Mac};
-use p256::{
-    elliptic_curve::{Field, PrimeField},
-    Scalar,
-};
-use serde_json::Value;
-use sha2::Sha512;
-use solana_derivation_path::DerivationPath;
-use solana_seed_phrase::generate_seed_from_seed_phrase_and_passphrase;
-use zolana_keypair::{NullifierKey, SigningKey, ViewingKey};
+mod common;
 
-const TSPP_COIN_TYPE: u32 = 1_392_955_331;
-const NIST256P1_MASTER_HMAC_KEY: &[u8] = b"Nist256p1 seed";
-
-fn text(value: &Value) -> &str {
-    value.as_str().expect("vector field is a string")
-}
-
-fn solana_path(account: u32) -> String {
-    format!("m/44'/501'/{account}'/0'")
-}
-
-fn tspp_path(account: u32, role: u32) -> String {
-    format!("m/44'/{TSPP_COIN_TYPE}'/{account}'/{role}'/0'")
-}
-
-fn derive_ed25519_node(seed: &[u8], path: &str) -> [u8; 32] {
-    let path = DerivationPath::from_absolute_path_str(path).expect("valid derivation path");
-    ExtendedSigningKey::from_seed(seed)
-        .expect("root node from seed")
-        .derive(&path)
-        .expect("hardened derivation")
-        .signing_key
-        .to_bytes()
-}
-
-fn hmac_sha512(key: &[u8], data: &[u8]) -> [u8; 64] {
-    let mut mac = Hmac::<Sha512>::new_from_slice(key).expect("HMAC accepts this key length");
-    mac.update(data);
-    mac.finalize().into_bytes().into()
-}
-
-fn split_digest(digest: &[u8; 64]) -> ([u8; 32], [u8; 32]) {
-    let (left, right) = digest.split_at(32);
-    (
-        left.try_into().expect("32-byte digest half"),
-        right.try_into().expect("32-byte digest half"),
-    )
-}
-
-fn nist256p1_master(seed: &[u8]) -> (Scalar, [u8; 32]) {
-    let mut digest = hmac_sha512(NIST256P1_MASTER_HMAC_KEY, seed);
-    loop {
-        let (key_bytes, chain) = split_digest(&digest);
-        let key: Option<Scalar> = Scalar::from_repr(key_bytes.into()).into();
-        if let Some(key) = key.filter(|scalar| !bool::from(scalar.is_zero())) {
-            return (key, chain);
-        }
-        digest = hmac_sha512(NIST256P1_MASTER_HMAC_KEY, &digest);
-    }
-}
-
-fn nist256p1_hardened_child(key: &Scalar, chain: &[u8; 32], index: u32) -> (Scalar, [u8; 32]) {
-    let hardened = (0x8000_0000u32 + index).to_be_bytes();
-    let mut data = Vec::with_capacity(37);
-    data.push(0);
-    data.extend_from_slice(&key.to_bytes());
-    data.extend_from_slice(&hardened);
-    loop {
-        let digest = hmac_sha512(chain, &data);
-        let (tweak_bytes, child_chain) = split_digest(&digest);
-        let tweak: Option<Scalar> = Scalar::from_repr(tweak_bytes.into()).into();
-        if let Some(tweak) = tweak {
-            let child_key = tweak + key;
-            if !bool::from(child_key.is_zero()) {
-                return (child_key, child_chain);
-            }
-        }
-        data.clear();
-        data.push(1);
-        data.extend_from_slice(&child_chain);
-        data.extend_from_slice(&hardened);
-    }
-}
-
-fn derive_p256_node(seed: &[u8], path: &[u32]) -> [u8; 32] {
-    let (mut key, mut chain) = nist256p1_master(seed);
-    for &index in path {
-        (key, chain) = nist256p1_hardened_child(&key, &chain, index);
-    }
-    key.to_bytes().into()
-}
-
-fn nullifier_secret(node: &[u8; 32]) -> [u8; 31] {
-    node[1..].try_into().expect("31-byte nullifier secret")
-}
+use common::fixtures::*;
 
 #[test]
 fn candidate_matches_frozen_seed_based_keypairs() {
-    let vectors: Value =
-        serde_json::from_str(include_str!("../test-vectors/seed_based_keypair.json"))
-            .expect("seed-based vectors are valid JSON");
-    let seed = generate_seed_from_seed_phrase_and_passphrase(text(&vectors["mnemonic"]), "");
-
-    for expected in vectors["accounts"]
-        .as_array()
-        .expect("accounts is an array")
-    {
-        let account = u32::try_from(
-            expected["account"]
-                .as_u64()
-                .expect("account is an unsigned integer"),
-        )
-        .expect("account fits u32");
-        let signing_secret = derive_ed25519_node(&seed, &solana_path(account));
-        let nullifier_secret =
-            nullifier_secret(&derive_ed25519_node(&seed, &tspp_path(account, 1)));
-        let viewing_secret = derive_p256_node(&seed, &[44, TSPP_COIN_TYPE, account, 2, 0]);
-
-        assert_eq!(
-            hex::encode(signing_secret),
-            text(&expected["signing_secret"])
-        );
-        assert_eq!(
-            hex::encode(nullifier_secret),
-            text(&expected["nullifier_secret"])
-        );
-        assert_eq!(
-            hex::encode(viewing_secret),
-            text(&expected["viewing_secret"])
-        );
-
-        let signing = SigningKey::from_ed25519_bytes(&signing_secret);
-        let nullifier = NullifierKey::from_secret(nullifier_secret);
-        let viewing = ViewingKey::from_bytes(&viewing_secret).expect("P-256 viewing key");
-        assert_eq!(
-            hex::encode(
-                signing
-                    .pubkey()
-                    .as_ed25519()
-                    .expect("ed25519 signing public key")
-            ),
-            text(&expected["signing_pubkey"])
-        );
-        assert_eq!(
-            hex::encode(nullifier.pubkey().expect("nullifier public key")),
-            text(&expected["nullifier_pubkey"])
-        );
-        assert_eq!(
-            hex::encode(viewing.pubkey().as_bytes()),
-            text(&expected["viewing_pubkey"])
+    let fixture: SeedFixture = load_fixture(
+        include_str!("../test-vectors/seed_based_keypair.json"),
+        "seed",
+    );
+    for case in fixture.cases {
+        assert_result(
+            &format!("seed/{}", case.id),
+            common::seed_account(&case.input),
+            &case.expected,
         );
     }
+}
+
+#[test]
+fn local_slip10_matches_published_master_vectors() {
+    let fixture: Slip10Fixture =
+        load_fixture(include_str!("../test-vectors/slip10.json"), "slip10");
+    for case in fixture.master_cases {
+        assert_result(
+            &format!("slip10/{}", case.id),
+            common::master(&case.input),
+            &case.expected,
+        );
+    }
+}
+
+#[test]
+fn local_slip10_matches_published_child_vectors() {
+    let fixture: Slip10Fixture =
+        load_fixture(include_str!("../test-vectors/slip10.json"), "slip10");
+    for case in fixture.child_cases {
+        assert_result(
+            &format!("slip10/{}", case.id),
+            common::child(&case.input),
+            &case.expected,
+        );
+    }
+}
+
+#[test]
+fn fixture_inventory_is_complete_and_unique() {
+    let ed: RailFixture<Ed25519Output> =
+        load_fixture(include_str!("../test-vectors/ed25519.json"), "ed25519");
+    let p256: RailFixture<P256Output> =
+        load_fixture(include_str!("../test-vectors/p256.json"), "p256");
+    let seed: SeedFixture = load_fixture(
+        include_str!("../test-vectors/seed_based_keypair.json"),
+        "seed",
+    );
+    let slip: Slip10Fixture = load_fixture(include_str!("../test-vectors/slip10.json"), "slip10");
+    assert_eq!(
+        (ed.derivation_cases.len(), ed.role_expansion_cases.len()),
+        (4, 6)
+    );
+    assert_eq!(
+        (p256.derivation_cases.len(), p256.role_expansion_cases.len()),
+        (7, 6)
+    );
+    assert_eq!(seed.cases.len(), 3);
+    assert_eq!((slip.master_cases.len(), slip.child_cases.len()), (3, 2));
+    let mut ids = std::collections::HashSet::new();
+    for fixture in [&ed as &dyn Fixture, &p256, &seed, &slip] {
+        for group in fixture.case_metadata() {
+            for (id, _) in group {
+                assert!(ids.insert(id), "duplicate case ID: {id}");
+            }
+        }
+    }
+    assert_eq!(ids.len(), 31);
+}
+
+#[test]
+fn malformed_fixtures_are_rejected() {
+    let original: serde_json::Value =
+        serde_json::from_str(include_str!("../test-vectors/ed25519.json")).unwrap();
+    let signing = "/derivation_cases/0/input/signing_secret";
+    for (name, pointer, value, message) in [
+        (
+            "malformed hex",
+            signing,
+            serde_json::json!("gg"),
+            "hexadecimal",
+        ),
+        ("odd hex", signing, serde_json::json!("0"), "Odd number"),
+        (
+            "short key",
+            signing,
+            serde_json::json!("00".repeat(31)),
+            "expected 32 bytes",
+        ),
+        (
+            "long key",
+            signing,
+            serde_json::json!("00".repeat(33)),
+            "expected 32 bytes",
+        ),
+        (
+            "empty list",
+            "/derivation_cases",
+            serde_json::json!([]),
+            "must not be empty",
+        ),
+        (
+            "duplicate ID",
+            "/derivation_cases/1/id",
+            original["derivation_cases"][0]["id"].clone(),
+            "duplicate case ID",
+        ),
+        (
+            "missing output",
+            "/derivation_cases/0/expected/outputs",
+            serde_json::json!({}),
+            "missing field",
+        ),
+    ] {
+        let mut fixture = original.clone();
+        *fixture.pointer_mut(pointer).unwrap() = value;
+        let error = parse_fixture::<RailFixture<Ed25519Output>>(&fixture.to_string()).unwrap_err();
+        assert!(error.contains(message), "{name}: {error}");
+    }
+    for pointer in [
+        "",
+        "/derivation_cases/0",
+        "/derivation_cases/0/input",
+        "/derivation_cases/0/expected",
+        "/derivation_cases/0/expected/outputs",
+    ] {
+        let mut fixture = original.clone();
+        fixture
+            .pointer_mut(pointer)
+            .unwrap()
+            .as_object_mut()
+            .unwrap()
+            .insert("unexpected".into(), serde_json::json!(true));
+        assert!(
+            parse_fixture::<RailFixture<Ed25519Output>>(&fixture.to_string())
+                .unwrap_err()
+                .contains("unknown field")
+        );
+    }
+    let mut seed: serde_json::Value =
+        serde_json::from_str(include_str!("../test-vectors/seed_based_keypair.json")).unwrap();
+    seed["cases"][0]["input"]["account"] = serde_json::json!(2147483648u32);
+    assert!(parse_fixture::<SeedFixture>(&seed.to_string())
+        .unwrap_err()
+        .contains("below 2^31"));
+    let mut slip: serde_json::Value =
+        serde_json::from_str(include_str!("../test-vectors/slip10.json")).unwrap();
+    slip["child_cases"][0]["input"]["index"] = serde_json::json!(2147483648u32);
+    assert!(parse_fixture::<Slip10Fixture>(&slip.to_string())
+        .unwrap_err()
+        .contains("below 2^31"));
 }

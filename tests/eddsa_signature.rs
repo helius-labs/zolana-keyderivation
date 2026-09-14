@@ -1,61 +1,31 @@
-use serde_json::Value;
-use zolana_keypair::{
-    derivation::{ed25519_derivation_message, expand_roles},
-    Curve, SigningKey,
-};
+mod common;
 
-fn text(value: &Value) -> &str {
-    value.as_str().expect("vector field is a string")
-}
-
-fn decode<const N: usize>(value: &Value) -> [u8; N] {
-    hex::decode(text(value))
-        .expect("vector field is hexadecimal")
-        .try_into()
-        .unwrap_or_else(|bytes: Vec<u8>| {
-            panic!("vector field has {} bytes; expected {N}", bytes.len())
-        })
-}
+use common::fixtures::{assert_result, load_fixture, Ed25519Output, RailFixture};
+use zolana_keypair::Curve;
 
 #[test]
 fn candidate_matches_frozen_eddsa_signature_derivation() {
-    let vectors: Value = serde_json::from_str(include_str!("../test-vectors/key_derivation.json"))
-        .expect("key derivation vectors are valid JSON");
-    let expected = &vectors["ed25519_rail"];
+    let fixture: RailFixture<Ed25519Output> =
+        load_fixture(include_str!("../test-vectors/ed25519.json"), "ed25519");
+    for case in fixture.derivation_cases {
+        let context = format!("ed25519/{}", case.id);
+        assert_result(
+            &context,
+            common::ed25519(&case.input, &context),
+            &case.expected,
+        );
+    }
+}
 
-    let signing = SigningKey::from_ed25519_bytes(&decode(&expected["signing_secret"]));
-    let signer_pubkey = signing
-        .pubkey()
-        .as_ed25519()
-        .expect("ed25519 signing public key");
-    assert_eq!(hex::encode(signer_pubkey), text(&expected["signer_pubkey"]));
-    assert_eq!(
-        hex::encode(ed25519_derivation_message(&signer_pubkey)),
-        text(&expected["derivation_message"])
-    );
-
-    let seed = signing.derivation_seed().expect("ed25519 derivation seed");
-    assert_eq!(
-        hex::encode(seed.as_slice()),
-        text(&expected["derivation_seed"])
-    );
-
-    let (nullifier, viewing) =
-        expand_roles(&seed, Curve::Ed25519).expect("role expansion succeeds");
-    assert_eq!(
-        hex::encode(nullifier.secret()),
-        text(&expected["nullifier_secret"])
-    );
-    assert_eq!(
-        hex::encode(nullifier.pubkey().expect("nullifier public key")),
-        text(&expected["nullifier_pubkey"])
-    );
-    assert_eq!(
-        hex::encode(viewing.secret_bytes().as_slice()),
-        text(&expected["viewing_secret"])
-    );
-    assert_eq!(
-        hex::encode(viewing.pubkey().as_bytes()),
-        text(&expected["viewing_pubkey"])
-    );
+#[test]
+fn candidate_matches_ed25519_expansion_boundaries() {
+    let fixture: RailFixture<Ed25519Output> =
+        load_fixture(include_str!("../test-vectors/ed25519.json"), "ed25519");
+    for case in fixture.role_expansion_cases {
+        assert_result(
+            &format!("ed25519/{}", case.id),
+            common::expansion(&case.input, Curve::Ed25519),
+            &case.expected,
+        );
+    }
 }

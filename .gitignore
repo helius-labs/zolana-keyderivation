@@ -1,2 +1,4 @@
 /Cargo.lock
 /target/
+
+/tools/reference/node_modules/
