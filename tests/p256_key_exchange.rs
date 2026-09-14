@@ -15,7 +15,7 @@ fn decode<const N: usize>(value: &Value) -> [u8; N] {
 }
 
 #[test]
-fn candidate_matches_frozen_p256_signature_derivation() {
+fn candidate_matches_frozen_p256_key_exchange_derivation() {
     let vectors: Value = serde_json::from_str(include_str!("../test-vectors/key_derivation.json"))
         .expect("key derivation vectors are valid JSON");
     let expected = &vectors["p256_rail"];

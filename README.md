@@ -2,7 +2,7 @@
 
 This repository checks whether a Zolana revision derives the same wallet keys as the deployed `release/dev-v2` version.
 
-The tests own their expected bytes. Separate tests load `zolana-keypair` from a sibling Zolana checkout and check the Ed25519 rail, P-256 rail, and seed-phrase accounts byte for byte.
+The tests own their expected bytes. Separate tests load `zolana-keypair` from a sibling Zolana checkout and check the Ed25519 and P-256 rails byte for byte. The seed-phrase test derives child secrets locally, then checks the candidate Zolana key constructors and public keys. It does not exercise a candidate mnemonic-to-child-key implementation.
 
 ## Run
 
