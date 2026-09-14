@@ -1,0 +1,201 @@
+{
+  "derivation_cases": [
+    {
+      "description": "Preserve deployed P-256 derivation bytes.",
+      "expected": {
+        "outputs": {
+          "derivation_seed": "1be97c186be7630bf6a341c43f55223472b57162000304049bed75c59cbd06b4",
+          "nullifier_pubkey": "0f1a4f947382895653f4485b199958cafae916f7f99360c62eea0e69bdf0cb87",
+          "nullifier_secret": "b9c2e59736439bc23323e3fe4eee55d2c8a7a5ce16a02f27ea009ddf0f54fd",
+          "viewing_pubkey": "0358749163c05cc7b90e565a6345a41378058fabe9096fa1e3737fd1d6e9806285",
+          "viewing_secret": "f9b60c8d09c6f72a4c90f1acd536d61d553a74bdfdfd0cf01b3d34bc73e33379"
+        },
+        "status": "ok"
+      },
+      "id": "p256_baseline",
+      "input": {
+        "signing_secret": "0000000000000000000000000000000000000000000000000000000000000009"
+      }
+    },
+    {
+      "description": "Lowest valid P-256 private scalar.",
+      "expected": {
+        "outputs": {
+          "derivation_seed": "9ef16592429da1403eaa29058eb7d9d5ad15a2ea557174f7b01ff7fe484eeeaf",
+          "nullifier_pubkey": "2a0e86d01908c3bbfcb28a5fd231c26350f66849d5b14ef2b65b8407b40cdb5a",
+          "nullifier_secret": "e6816717c025176e09bc0df278b5e6f8c272bcb688d6f135045ba6b191af7f",
+          "viewing_pubkey": "03b79b5017601d39ed06bfa93e01631bdbda798ced467717ee4410cfca664acc29",
+          "viewing_secret": "11bc564af18942080a3b81c93a58146c8c546c11a5ecf5dedf4f68802e4b679d"
+        },
+        "status": "ok"
+      },
+      "id": "p256_scalar_one",
+      "input": {
+        "signing_secret": "0000000000000000000000000000000000000000000000000000000000000001"
+      }
+    },
+    {
+      "description": "Highest valid P-256 private scalar.",
+      "expected": {
+        "outputs": {
+          "derivation_seed": "9ef16592429da1403eaa29058eb7d9d5ad15a2ea557174f7b01ff7fe484eeeaf",
+          "nullifier_pubkey": "2a0e86d01908c3bbfcb28a5fd231c26350f66849d5b14ef2b65b8407b40cdb5a",
+          "nullifier_secret": "e6816717c025176e09bc0df278b5e6f8c272bcb688d6f135045ba6b191af7f",
+          "viewing_pubkey": "03b79b5017601d39ed06bfa93e01631bdbda798ced467717ee4410cfca664acc29",
+          "viewing_secret": "11bc564af18942080a3b81c93a58146c8c546c11a5ecf5dedf4f68802e4b679d"
+        },
+        "status": "ok"
+      },
+      "id": "p256_scalar_n_minus_one",
+      "input": {
+        "signing_secret": "ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632550"
+      }
+    },
+    {
+      "description": "Reject invalid P-256 scalar zero.",
+      "expected": {
+        "error": {
+          "kind": "invalid_secret_key"
+        },
+        "status": "error"
+      },
+      "id": "p256_scalar_zero",
+      "input": {
+        "signing_secret": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "Reject invalid P-256 scalar n.",
+      "expected": {
+        "error": {
+          "kind": "invalid_secret_key"
+        },
+        "status": "error"
+      },
+      "id": "p256_scalar_n",
+      "input": {
+        "signing_secret": "ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551"
+      }
+    },
+    {
+      "description": "Reject invalid P-256 scalar n_plus_one.",
+      "expected": {
+        "error": {
+          "kind": "invalid_secret_key"
+        },
+        "status": "error"
+      },
+      "id": "p256_scalar_n_plus_one",
+      "input": {
+        "signing_secret": "ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632552"
+      }
+    },
+    {
+      "description": "Reject invalid P-256 scalar max.",
+      "expected": {
+        "error": {
+          "kind": "invalid_secret_key"
+        },
+        "status": "error"
+      },
+      "id": "p256_scalar_max",
+      "input": {
+        "signing_secret": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    }
+  ],
+  "role_expansion_cases": [
+    {
+      "description": "32-byte all-zero KDF input.",
+      "expected": {
+        "outputs": {
+          "nullifier_pubkey": "0c4cde2ec01f477b126a502e7c94212c2a56ad6572e172dad967cdcfbd517adb",
+          "nullifier_secret": "592276e4569ed0ebe8f5b40ee4c173344a8e32504175fd50d8a9d3d40d4312",
+          "viewing_pubkey": "0316b09e037a4f192e421fb9a3269c612eab313af293c3d9c130fec1ae7bff9c56",
+          "viewing_secret": "94986eaacb9f72ffc4a54fe122e447f0081364ab8eedca8c0805a6135c3e61ae"
+        },
+        "status": "ok"
+      },
+      "id": "p256_expand_zero",
+      "input": {
+        "seed": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "32-byte all-ff KDF input.",
+      "expected": {
+        "outputs": {
+          "nullifier_pubkey": "22b86f1c0d72ea396d2b86675e96396168df16ff320a1a2cf2b74f97c2247300",
+          "nullifier_secret": "f6a3e96367d0a0ee8dd9a754b00c2358d945278ffa79ab67ae8cedbf3e5449",
+          "viewing_pubkey": "036f3e6716c2514f6c762d83c02b529c02fa77682bb3f47be94458192ff7e3be9e",
+          "viewing_secret": "45bc4b6466571c9ce2728a32d1d571b6b818854c9de5ee12550c1a47b3de6cd9"
+        },
+        "status": "ok"
+      },
+      "id": "p256_expand_ff",
+      "input": {
+        "seed": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    },
+    {
+      "description": "Reject a 0-byte derivation seed; this rail requires 32.",
+      "expected": {
+        "error": {
+          "expected": 32,
+          "got": 0,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "p256_expand_empty",
+      "input": {
+        "seed": ""
+      }
+    },
+    {
+      "description": "Reject a 31-byte derivation seed; this rail requires 32.",
+      "expected": {
+        "error": {
+          "expected": 32,
+          "got": 31,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "p256_expand_short",
+      "input": {
+        "seed": "00000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "Reject a 33-byte derivation seed; this rail requires 32.",
+      "expected": {
+        "error": {
+          "expected": 32,
+          "got": 33,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "p256_expand_long",
+      "input": {
+        "seed": "000000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    {
+      "description": "Reject a 64-byte derivation seed; this rail requires 32.",
+      "expected": {
+        "error": {
+          "expected": 32,
+          "got": 64,
+          "kind": "invalid_derivation_seed"
+        },
+        "status": "error"
+      },
+      "id": "p256_expand_ed25519_length",
+      "input": {
+        "seed": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  ]
+}

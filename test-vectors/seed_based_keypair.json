@@ -1,0 +1,64 @@
+{
+  "cases": [
+    {
+      "description": "Preserve deployed seed-account 0 keys.",
+      "expected": {
+        "outputs": {
+          "nullifier_pubkey": "070a4386ec323b299c7d7b9faf744e001b545974ac02fd148b537a4528ab8474",
+          "nullifier_secret": "85e3a0d6bf9d62582e6500ea3245ddddbf65e517dbc985c85982e383e4751e",
+          "signing_pubkey": "f036276246a75b9de3349ed42b15e232f6518fc20f5fcd4f1d64e81f9bd258f7",
+          "signing_secret": "37df573b3ac4ad5b522e064e25b63ea16bcbe79d449e81a0268d1047948bb445",
+          "viewing_pubkey": "03170ee9cf7a6f1ad811bd2019d386f67ce337458e0bf585c3cad7ddac85373e32",
+          "viewing_secret": "1694bc1c8a456511d0364e26c71409b4912c5b2ff56bed3fc9c706e066496a54"
+        },
+        "status": "ok"
+      },
+      "id": "seed_account_0",
+      "input": {
+        "account": 0,
+        "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+        "passphrase": ""
+      }
+    },
+    {
+      "description": "Preserve deployed seed-account 1 keys.",
+      "expected": {
+        "outputs": {
+          "nullifier_pubkey": "1053061c5b9c4fc75b26b72d83d88d62f80e397cea6f36c07e25c9d8645106fc",
+          "nullifier_secret": "62351d526f51996740cc2e88978b084117fdee00af7c04df999a22321c9001",
+          "signing_pubkey": "f8029acf5cbcbdd5ac46ec147f3b78a3df6e5022ef0411db2bab650d329a4cd4",
+          "signing_secret": "ba5e7b6e3680b4eb81db8e54c8e466b2e9a899355888403355d858ab985d2fc4",
+          "viewing_pubkey": "03bb3b5ea4e0a873297d1f80e2ee1ebfabf472129debca75fced4753a95769fe27",
+          "viewing_secret": "60a8c80b23007c79c1dcf1821446dc77e6fcd2bb3e747ddca629784adaf8fa18"
+        },
+        "status": "ok"
+      },
+      "id": "seed_account_1",
+      "input": {
+        "account": 1,
+        "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+        "passphrase": ""
+      }
+    },
+    {
+      "description": "Largest account index before setting the hardened bit.",
+      "expected": {
+        "outputs": {
+          "nullifier_pubkey": "152f19ab7c0ded926ee91a48a811f5ff453fcb1d4c160cea961a3956bb3f0e6a",
+          "nullifier_secret": "e67430c9896728109b23bae73fbf722e4c49e0b79a4ce78c3cda023b7b8e34",
+          "signing_pubkey": "378e0afaf309308dc2faf3788c449a2c9cecf3114f20e5778308e6f682d6db03",
+          "signing_secret": "9d8b65c254b78e79f265d6b382eb044782a2f9cc3c20ea39ae94d6dd0f281b1d",
+          "viewing_pubkey": "020b4486c96a93a995e79a9860b5c79738ed5d6ec6f5262d313597e60805c940ca",
+          "viewing_secret": "ee87ec02396ac3264388399557cc4b595a897468c2c3b227a4ecfcb135203913"
+        },
+        "status": "ok"
+      },
+      "id": "seed_account_max",
+      "input": {
+        "account": 2147483647,
+        "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+        "passphrase": ""
+      }
+    }
+  ]
+}
